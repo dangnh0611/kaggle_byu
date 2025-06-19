@@ -1,0 +1,9 @@
+_target_: byu.models.encoders.smp.SMPEncoder
+
+model_name: resnet101
+weights: imagenet
+# in_channels: 1
+# depth: 5
+# weights: null
+# strides: [[2, 2, 2], [2, 2, 2], [2, 2, 2], [2, 2, 2], [2, 2, 2]]
+# out_indices: [0,1,2,3,4]

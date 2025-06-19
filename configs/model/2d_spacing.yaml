@@ -1,0 +1,18 @@
+_target_: byu.models.spacing_2d_model.Spacing2dModel
+
+encoder:
+  model_name: maxvit_tiny_tf_512.in1k
+  pretrained: True
+  img_size:
+  - ${data.patch_size.0}
+  - ${data.patch_size.1}
+  in_chans: 3
+  drop_rate: 0.0
+  drop_path_rate: 0.0
+
+head:
+  pool_type: avg
+  drop_rate: 0.0
+  hidden_size: null
+  hidden_drop_rate: 0.0
+  hidden_act: gelu

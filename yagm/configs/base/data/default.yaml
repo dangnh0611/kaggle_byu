@@ -1,0 +1,3 @@
+_target_: yagm.data.base_data_module.BaseDataModule
+_dataset_target_: ???
+# additional **kwargs passed to init dataset

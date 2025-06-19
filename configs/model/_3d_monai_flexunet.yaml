@@ -1,0 +1,22 @@
+_target_: byu.models.monai_wrapper.MonaiWrapper
+
+_model_: monai.networks.nets.FlexibleUNet
+in_channels: 1
+out_channels: ${data.num_particles}
+backbone: resnet10
+pretrained: True
+decoder_channels: [512, 256, 128, 64]
+spatial_dims: 3
+norm:
+- "batch"
+- {'eps': 0.001, 'momentum': 0.1}
+act:
+- "relu"
+- {'inplace': True}
+dropout: 0.0
+decoder_bias: True
+upsample: pixelshuffle
+pre_conv: default
+interp_mode: nearest
+is_pad: False
+weight_init: medicalnet # none | medicalnet | tf | last_zero | last_negative

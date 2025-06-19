@@ -1,0 +1,29 @@
+_target_: byu.loss.loss.CombineLoss
+
+losses:
+- bce:
+    _target_: byu.loss.loss.BCEWithLogitsLoss
+    reduction: mean
+    pos_weight: null
+- tversky:
+    _target_: byu.loss.monai_tversky.TverskyLoss
+    include_background: True
+    to_onehot_y: False
+    sigmoid: True
+    softmax: False
+    other_act: null
+    alpha: 0.2
+    beta: 0.8
+    reduction: mean
+    smooth_nr: 1e-2
+    smooth_dr: 1e-2
+    batch: True
+    soft_label: True
+
+pre_scale:
+  bce: 1.0
+  tversky: 1e-3
+
+combine_mtl:
+  method: scalar
+  weights: [1.0, 0.0] # 0.8 * bce + 0.2 * 0.001 * tversky4

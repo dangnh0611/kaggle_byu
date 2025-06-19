@@ -1,0 +1,13 @@
+_target_: byu.models.encoders.hiera_3d.Hiera3dEncoder
+num_classes: 1
+in_chans: 3
+input_size: ${data.patch_size}
+embed_dim: 64
+num_heads: 1
+stages: [1, 2, 7, 2]  # T
+q_stride: [2, 2, 2]  # ori (1,2,2)
+mask_unit_size: [1, 8, 8]
+patch_kernel: [3, 7, 7]
+patch_stride: [4, 4, 4] # ori (2, 4, 4)
+patch_padding: [1, 3, 3]
+sep_pos_embed: True

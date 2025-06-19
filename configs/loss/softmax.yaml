@@ -1,0 +1,3 @@
+_target_: byu.loss.loss.SoftmaxHeatmapLoss
+
+loss_name: cce

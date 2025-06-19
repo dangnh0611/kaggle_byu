@@ -1,0 +1,3 @@
+_target_: byu.models.encoders.i3d.I3DEncoder
+
+pretrained: ckpts/I3D_NLN_8x8_R50.pkl

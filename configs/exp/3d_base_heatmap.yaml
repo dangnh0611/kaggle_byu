@@ -1,0 +1,100 @@
+# @package _global_
+
+defaults:
+  - override /task: 3d_heatmap
+  - override /data: 3d_heatmap
+  - override /model: 3d_unet
+  - override /loss: join_bce_tversky
+  - _self_
+
+env:
+  data_dir: data
+
+cv:
+  strategy: skf4_rd42
+  num_folds: 4
+  fold_idx: 0
+
+loader:
+  train_batch_size: 1
+  val_batch_size: 1
+  train_num_workers: 8
+  val_num_workers: 4
+  pytorch_num_threads: 8
+  pin_memory: False
+
+model:
+  head:
+    ms: [0]
+
+callbacks:
+  early_stopping:
+    patience: 4 # number of checks with no improvement after which training will be stopped
+  model_checkpoint:
+    metrics: ["val/Fbeta", "val/PAP"]
+    train_time_interval: null
+    every_n_train_steps: null
+    every_n_epochs: null
+    save_on_train_epoch_end: False
+    save_top_k: 5
+  validation_scheduler:
+    milestones: [8100]
+    val_check_intervals: [2000]
+    check_val_every_n_epochs: null
+    milestone_unit: step
+  model_summary:
+    max_depth: 4
+
+trainer:
+  max_epochs: null
+  max_steps: 20000
+  val_check_interval: 4000
+  check_val_every_n_epoch: null
+  accumulate_grad_batches: 1
+  gradient_clip_val: null
+  precision: 16-mixed
+  deterministic: True
+  benchmark: False
+  log_every_n_steps: 5
+
+optim:
+  name: torch@adamw
+  lr: 5e-4
+  weight_decay: 0.0
+  betas: [0.9, 0.999]
+  eps: 1e-7
+  # momentum: 0.9
+
+scheduler:
+  name: timm@cosine
+  warmup_steps: 0
+  warmup_epochs: null
+  cooldown_epochs: 0
+  min_lr_factor: 5e-3
+  warmup_lr_factor: 1e-2
+  cycle_limit: 1
+  cycle_decay: 0.5
+
+ema:
+  enable: True
+  train_decays: [0.99]
+  val_decays: [0.99]
+  test_decays: ${ema.train_decays}
+  force_cpu: False
+  reset_from: global_best # null or none, primary, last_best, global_best
+  reset_sched_epochs: [-1] # list of epochs to perform reset
+  reset_on_plateau: -1
+  min_reset_interval: 5
+
+misc:
+  log_raw_cfg: False
+  log_cfg: True
+  log_cfg_rich: True
+  log_model: False  # print model in Torch style
+
+loggers:
+  wandb:
+    project: byu
+
+seed: 42
+exp_name: byu

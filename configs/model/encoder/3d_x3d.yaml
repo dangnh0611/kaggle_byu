@@ -1,0 +1,5 @@
+_target_: byu.models.encoders.x3d.X3DEncoder
+
+model_name: x3d
+model_size: M
+pretrained: ckpts/x3d_m.pyth

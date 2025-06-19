@@ -1,0 +1,14 @@
+_target_: byu.models.encoders.tsn.tsn_multiscale_encoder.TSNEncoder
+
+resample_stride: 2
+num_segments: 8
+base_model: resnet50
+partial_bn: False
+pretrain: null # imagenet | null
+is_shift: True
+shift_div: 8
+shift_place: blockres
+temporal_pool: False
+non_local: True
+
+pretrained: ckpts/TSM_kinetics_RGB_resnet50_shift8_blockres_avg_segment8_e100_dense_nl.pth

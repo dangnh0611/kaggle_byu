@@ -1,0 +1,7 @@
+model_name: tf_efficientnet_b0.ns_jft_in1k
+pretrained: True
+features_only: False
+# input_size: [3, 512, 512]
+in_chans: ${data.patch_size.0}
+drop_rate: 0.0
+drop_path_rate: 0.0

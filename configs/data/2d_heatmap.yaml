@@ -1,0 +1,34 @@
+defaults:
+  - default
+
+_dataset_target_: byu.data.datasets.heatmap_2d_dataset.Heatmap2dDataset
+
+label_fname: gt_v2  # gt | gt_v2 | gt_v3 | all_gt | all_gt_v3
+patch_size: [3, 512, 512]
+border: [0, 0, 0]
+overlap: [0, 0, 0]
+start: [0, 0, 0]
+fast_val_workers: 5
+fast_val_prefetch: 5
+dup_per_epoch: 50
+agg_mode: patch  # patch | fit_single
+heatmap_stride: [16,16]
+sigma: 0.2
+heatmap_conf_scale_mode: null  # null | min_max | segment | point
+heatmap_same_sigma: False
+filter_rule: null  # null | eq1 | le1
+
+sampling:
+  bg_ratio: 0.25
+  rand_z_sigma_scale: 1.0
+
+transform:
+  target_spacing: [16,16,16]
+  resample_mode: trilinear
+  equalize: False
+  
+augment:
+  p_dropout: 0.0
+
+tta:
+    enable: [yx, xy, yx_x, yx_y]

@@ -1,0 +1,15 @@
+# @package _global_
+
+defaults:
+  - base_heatmap
+  - override /model: ?
+  - _self_
+
+trainer:
+  deterministic: False
+
+tags: ["heatmap", "unet"]
+exp_name: unet_3d_generic
+
+
+

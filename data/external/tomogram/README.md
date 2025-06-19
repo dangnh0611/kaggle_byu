@@ -1,0 +1,3 @@
+This directory contains downloaded metadata files of CryoET external dataset using `src/byu/tools/download_external_dataset.py`  
+Each directory represent a tomogram. Each directory contains 2D slices along Z dimension, saved as `.jpg` images, same format as the official competition dataset.  
+There are 1287 directories in total, detailed structure listed in `pwd_structure.txt` (outputs of `find -L ./`)

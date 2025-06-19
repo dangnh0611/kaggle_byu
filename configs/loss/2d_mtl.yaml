@@ -1,0 +1,10 @@
+_target_: byu.loss.mtl_2d.Mtl2dLoss
+
+kpt_loss: mse
+kptness_loss: bce
+heatmap_loss: bce
+dsnt_loss: mse
+enable_idxs: [0, 1, 2, 3]
+
+combine_mtl:
+  method: scalar

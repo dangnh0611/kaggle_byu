@@ -1,0 +1,9 @@
+# @package _global_
+
+defaults:
+  - 3d_base_heatmap
+  - override /model: 3d_unet_maxxvit_lstm
+  - _self_
+
+tags: ["heatmap", "unet", "maxxvit", "lstm"]
+exp_name: unet_maxxvit_2d

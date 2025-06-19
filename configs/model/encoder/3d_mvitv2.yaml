@@ -1,0 +1,5 @@
+_target_: byu.models.encoders.mvitv2.MVITv2Encoder
+
+model_name: mvitv2
+model_size: B
+pretrained: ckpts/MViTv2_B_32x3_k400_f304025456.pyth

@@ -1,0 +1,11 @@
+# @package _global_
+
+defaults:
+  - 3d_base_heatmap
+  - override /model: 3d_unet_efficientnet_lstm
+  - _self_
+
+tags: ["heatmap", "unet", "efficientnet", "lstm"]
+exp_name: unet_efficientnet_lstm
+
+

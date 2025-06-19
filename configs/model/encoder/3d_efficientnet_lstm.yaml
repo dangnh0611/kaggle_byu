@@ -1,0 +1,26 @@
+_target_: byu.models.encoders.cnn_lstm.CnnLstmEncoder
+        
+resample:
+    stride: 2
+    channels: 3
+    
+normalize: model
+    
+encoder_2d:        
+    model_name: tf_efficientnet_b0.ns_jft_in1k
+    pretrained: True
+    feature_indices: [0, 1, 2, 3, 4]
+    features_only: False
+    in_chans: ${model.encoder.resample.channels}
+    drop_rate: 0.0
+    drop_path_rate: 0.0
+
+downsample:
+    mode: avg_pool
+    strides: [2, 2, 2, 2, 2]
+
+lstm:
+    enable: False
+    idxs: [2, 3, 4]
+    bi: True
+    num_layers: 1

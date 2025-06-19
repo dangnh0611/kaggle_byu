@@ -1,0 +1,5 @@
+_target_: byu.loss.loss.ForegroundWeightedHeatmapLoss
+
+loss_name: mse
+fg_weight: 1.0
+fg_thres: ${data.label_smooth.0}

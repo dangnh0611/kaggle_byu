@@ -1,0 +1,48 @@
+_target_: src.byu.task.heatmap_3d_task.Heatmap3dTask
+
+# metrics related config
+metrics:
+  train/loss_epoch: min
+  val/loss: min
+
+  val/PAP: max
+  val/mPAP: max
+  val/Fbeta: max
+  val/Precision: "val/Fbeta"
+  val/Recall: "val/Fbeta"
+  val/thres: "val/Fbeta"
+  val/bestR: max
+  val/AP: max
+  val/mAP: max
+  val/kaggleFbeta: max
+
+metric_keep_top_k: 1
+metric: val/Fbeta
+metric_mode: ${task.metrics.${task.metric}} # min | max
+log_metrics:
+- val/PAP
+- val/mPAP
+- val/Fbeta
+- val/Precision
+- val/Recall
+- val/thres
+- val/bestR
+- val/AP
+- val/mAP
+- val/loss
+- train/loss_epoch
+- val/loss
+
+decode:
+  heatmap_stride: [1,1,1]
+  method: nms
+  act: sigmoid
+
+  conf_thres: 0.01
+  max_dets: 1
+  timeout: 3
+
+  nms:
+    pool_ksize: null
+    radius_thres: null
+  

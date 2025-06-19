@@ -1,0 +1,8 @@
+_target_: yagm.layers.neck.FactorizedFPN3d
+
+intermediate_channels_list: null
+target_level: -1
+conv_ksizes: [3, 3] 
+norm: layernorm_3d
+act: gelu
+interpolation_mode: trilinear

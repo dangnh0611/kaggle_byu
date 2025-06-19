@@ -1,0 +1,22 @@
+_target_: src.byu.task.spacing_2d_task.Spacing2dTask
+
+# metrics related config
+metrics:
+  train/loss_epoch: min
+  val/loss: min
+  val/MAE: min
+  val/MIN: min
+  val/MAX: min
+  val/STD: min
+
+metric_keep_top_k: 1
+metric: val/MAE
+metric_mode: ${task.metrics.${task.metric}} # min | max
+log_metrics:
+- val/MAE
+- val/loss
+- val/MIN
+- val/MAX
+- val/STD
+- train/loss_epoch
+  

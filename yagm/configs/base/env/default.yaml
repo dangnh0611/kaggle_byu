@@ -1,0 +1,6 @@
+data_dir: null  # path to data directory
+output_dir: ${hydra:runtime.output_dir} # path to output directory, created dynamically by hydra
+fold_output_dir: ${env.output_dir}/fold_${cv.fold_idx}/
+output_metadata_dir: ${env.output_dir}/fold_${cv.fold_idx}/metadata/
+output_viz_dir: ${env.output_dir}/fold_${cv.fold_idx}/viz/
+cwd_dir: ${hydra:runtime.cwd} # path to working directory

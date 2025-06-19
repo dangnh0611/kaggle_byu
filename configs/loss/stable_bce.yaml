@@ -1,0 +1,3 @@
+_target_: byu.loss.loss.NumericalStableBCE
+
+divisor: 16384

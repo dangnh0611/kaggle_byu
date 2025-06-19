@@ -1,0 +1,345 @@
+# @package _global_
+
+defaults:
+  - 2d_base_heatmap
+  - _self_
+
+task:
+  _target_: src.byu.task.heatmap_2d_task.Heatmap2dTask
+  metrics:
+    train/loss_epoch: min
+    val/PAP: max
+    val/mPAP: max
+    val/Fbeta: max
+    val/Precision: val/Fbeta
+    val/Recall: val/Fbeta
+    val/thres: val/Fbeta
+    val/bestR: max
+    val/AP: max
+    val/mAP: max
+    val/kaggleFbeta: max
+  metric_keep_top_k: 1
+  metric: val/Fbeta
+  metric_mode: ${task.metrics.${task.metric}}
+  log_metrics:
+  - val/PAP
+  - val/mPAP
+  - val/Fbeta
+  - val/Precision
+  - val/Recall
+  - val/thres
+  - val/bestR
+  - val/AP
+  - val/mAP
+  - train/loss_epoch
+  decode:
+    heatmap_stride:
+    - 8
+    - 8
+    method: nms
+    act: sigmoid
+    conf_thres: 0.01
+    max_dets: 1
+    timeout: 3
+    nms:
+      pool_ksize: null
+      radius_thres: null
+data:
+  _target_: yagm.data.base_data_module.BaseDataModule
+  _dataset_target_: byu.data.datasets.heatmap_2d_dataset.Heatmap2dDataset
+  label_fname: all_gt_v3
+  patch_size:
+  - 3
+  - 896
+  - 896
+  border:
+  - 0
+  - 0
+  - 0
+  overlap:
+  - 0
+  - 0
+  - 0
+  start:
+  - 0
+  - 0
+  - 0
+  fast_val_workers: 5
+  fast_val_prefetch: 5
+  dup_per_epoch: 50
+  agg_mode: patch
+  heatmap_stride:
+  - 16
+  - 16
+  sigma: 0.2
+  heatmap_conf_scale_mode: null
+  heatmap_same_sigma: false
+  filter_rule: null
+  sampling:
+    bg_ratio: 0.05
+    rand_z_sigma_scale: 1.0
+  transform:
+    target_spacing:
+    - 32
+    - 16
+    - 16
+    resample_mode: trilinear
+    equalize: false
+  augment:
+    p_dropout: 0.0
+  tta:
+    enable: yx
+model:
+  encoder:
+    model_name: maxvit_tiny_tf_512.in1k
+    pretrained: true
+    img_size:
+    - ${data.patch_size.1}
+    - ${data.patch_size.2}
+    in_chans: ${data.patch_size.0}
+    drop_rate: 0.0
+    drop_path_rate: 0.0
+  _target_: byu.models.unet_2d.Unet2dModel
+  num_kpts: 1
+  neck:
+    name: factorized_fpn
+    intermediate_channels_list: 64
+    target_level: -2
+    conv_ksizes:
+    - 3
+    - 3
+    norm: layernorm_2d
+    act: gelu
+    interpolation_mode: bilinear
+  decoder:
+    n_blocks: 1
+    channels:
+    - 256
+    - 192
+    - 128
+    - 96
+    - 64
+    dropout: 0.0
+    out_channels: 1
+    act: sigmoid
+  reg_head:
+    type: decoupled_v2
+    feature_mode: enc_dec
+    feature_idx: -1
+    hidden_dim: 1024
+    hidden_act: gelu
+    hidden_first_dropout: 0.0
+    cls_dropout: 0.0
+    reg_dropout: 0.0
+    norm: layernorm2d
+    norm_eps: 1.0e-06
+    pool_type: avg
+    hidden_size_per_kpt: 64
+loss:
+  _target_: byu.loss.mtl_2d.Mtl2dLoss
+  kpt_loss: mse
+  kptness_loss: bce
+  heatmap_loss: bce
+  dsnt_loss: mse
+  enable_idxs:
+  - 2
+  combine_mtl:
+    method: scalar
+loader:
+  steps_per_epoch: -1
+  train_batch_size: 8
+  val_batch_size: 8
+  num_workers: 8
+  pytorch_num_threads: 8
+  pin_memory: false
+  drop_last: true
+  persistent_workers: false
+  batch_sampler: null
+  train_num_workers: 32
+  val_num_workers: 8
+callbacks:
+  model_checkpoint:
+    _target_: yagm.utils.lightning.CustomModelCheckpoint
+    metrics: null
+    dirpath: ${env.output_dir}/fold_${cv.fold_idx}/ckpts
+    verbose: true
+    save_last: link
+    save_top_k: -1
+    auto_insert_metric_name: false
+    save_weights_only: false
+    every_n_train_steps: 2000
+    train_time_interval: null
+    every_n_epochs: null
+    save_on_train_epoch_end: false
+    enable_version_counter: false
+  early_stopping:
+    _target_: lightning.pytorch.callbacks.EarlyStopping
+    monitor: ${task.metric}
+    min_delta: 0.0
+    patience: 4
+    verbose: true
+    mode: ${task.metric_mode}
+    strict: true
+    check_finite: true
+    stopping_threshold: null
+    divergence_threshold: null
+    check_on_train_epoch_end: false
+    log_rank_zero_only: true
+  lr_monitor:
+    _target_: lightning.pytorch.callbacks.LearningRateMonitor
+    logging_interval: null
+    log_momentum: false
+    log_weight_decay: false
+  model_summary:
+    _target_: lightning.pytorch.callbacks.ModelSummary
+    max_depth: 4
+  tqdm_progress_bar:
+    _target_: yagm.utils.lightning.CustomTQDMProgressBar
+    refresh_rate: 1
+    process_position: 0
+  validation_scheduler:
+    _target_: yagm.utils.lightning.ValidationScheduler
+    milestones:
+    - 999999
+    val_check_intervals:
+    - 3000
+    check_val_every_n_epochs: null
+    milestone_unit: step
+loggers:
+  csv:
+    _target_: lightning.pytorch.loggers.csv_logs.CSVLogger
+    save_dir: ${env.output_dir}/fold_${cv.fold_idx}/
+    name: csv_logs
+    version: ''
+    prefix: ''
+    flush_logs_every_n_steps: 100
+  wandb:
+    _target_: lightning.pytorch.loggers.wandb.WandbLogger
+    name: ${_or:${exp_name}_fold${cv.fold_idx}, ${now:%m-%d}|${now:%H-%M-%S}_${_no_slash:${hydra:job.override_dirname}}}
+    save_dir: ${env.output_dir}/fold_${cv.fold_idx}/
+    version: ''
+    offline: false
+    id: null
+    anonymous: null
+    project: byu
+    log_model: false
+    experiment: null
+    prefix: ''
+    checkpoint_name: null
+    group: ''
+    tags: ${all_tags}
+    job_type: ''
+trainer:
+  accelerator: gpu
+  strategy: auto
+  devices: auto
+  num_nodes: 1
+  precision: 16-mixed
+  fast_dev_run: 0
+  max_epochs: null
+  min_epochs: null
+  max_steps: 20000
+  min_steps: null
+  max_time: null
+  limit_train_batches: null
+  limit_val_batches: null
+  limit_test_batches: null
+  limit_predict_batches: null
+  overfit_batches: 0.0
+  val_check_interval: 20000
+  check_val_every_n_epoch: null
+  num_sanity_val_steps: 0
+  log_every_n_steps: 5
+  enable_checkpointing: true
+  enable_progress_bar: true
+  enable_model_summary: true
+  accumulate_grad_batches: 4
+  gradient_clip_val: null
+  gradient_clip_algorithm: null
+  cudnn: true
+  deterministic: true
+  benchmark: true
+  inference_mode: true
+  use_distributed_sampler: true
+  profiler: null
+  detect_anomaly: false
+  barebones: false
+  plugins: null
+  sync_batchnorm: false
+  dist_batchnorm: ''
+  reload_dataloaders_every_n_epochs: 0
+  default_root_dir: ${env.output_dir}
+  torch_compile:
+    enable: false
+    fullgraph: false
+    dynamic: null
+    mode: null
+optim:
+  name: torch@adamw
+  lr: 0.0001
+  weight_decay: 0.0
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1.0e-07
+scheduler:
+  name: timm@cosine
+  max_epochs: ${trainer.max_epochs}
+  max_steps: ${trainer.max_steps}
+  steps_per_epoch: ${loader.steps_per_epoch}
+  warmup_steps: 0
+  warmup_epochs: null
+  cooldown_epochs: 0
+  lr: ${optim.lr}
+  min_lr_factor: 0.005
+  warmup_lr_factor: 0.01
+  cycle_limit: 1
+  cycle_decay: 0.5
+  metric: ${task.metric}
+  metric_mode: ${task.metric_mode}
+env:
+  data_dir: data
+  output_dir: ${hydra:runtime.output_dir}
+  fold_output_dir: ${env.output_dir}/fold_${cv.fold_idx}/
+  output_metadata_dir: ${env.output_dir}/fold_${cv.fold_idx}/metadata/
+  output_viz_dir: ${env.output_dir}/fold_${cv.fold_idx}/viz/
+  cwd_dir: ${hydra:runtime.cwd}
+cv:
+  strategy: skf4_rd42
+  num_folds: 4
+  fold_idx: 0
+  train_on_all: true
+ema:
+  enable: true
+  train_decays:
+  - 0.99
+  val_decays:
+  - 0.99
+  test_decays: ${ema.train_decays}
+  force_cpu: false
+  reset_from: global_best
+  reset_sched_epochs:
+  - -1
+  reset_on_plateau: -1
+  min_reset_interval: 5
+misc:
+  log_level: INFO
+  log_raw_cfg: false
+  log_cfg: true
+  log_cfg_rich: true
+  log_model: true
+  cooldown_sec: 0.0
+ckpt:
+  path: null
+  name: best.ckpt
+  strict: true
+tags:
+- dev
+all_tags: ${tags}
+train: true
+val: false
+test: false
+predict: false
+oof_eval: true
+seed: 20250305
+exp_name: MAXVITTINY_3x896_ALLGTV3_BS8x4_LR1e4_SEED20250305

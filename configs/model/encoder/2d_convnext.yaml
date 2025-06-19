@@ -1,0 +1,6 @@
+model_name: convnext_small.fb_in22k_ft_in1k_384  # convnext_nano.r384_ad_in12k | convnext_tiny.fb_in22k_ft_in1k_384 | convnext_small.fb_in22k_ft_in1k_384
+pretrained: True
+in_chans: ${data.patch_size.0}
+features_only: False
+drop_rate: 0.0
+drop_path_rate: 0.0

@@ -1,0 +1,17 @@
+_target_: byu.models.unet_3d.Unet3dModel
+
+defaults:
+  - encoder: 3d_mvitv2
+
+decoder:
+  decoder_channels: [192]
+  n_blocks: 1
+  use_batchnorm: True
+  attention_type: scse
+  center: False
+  strides: [[2, 2, 1], [2, 2, 1], [2, 2, 1], [4, 4, 2]]
+  weight_init: xavier
+
+head:
+  out_channels: 1
+  weight_init: xavier

@@ -1,0 +1,19 @@
+# @package _global_
+
+defaults:
+  - 3d_base_heatmap
+  - override /model: 3d_unet_mvitv2
+  - _self_
+
+trainer:
+  deterministic: False
+
+optim:
+  name: torch@adamw
+  lr: 1e-4
+
+tags: ["heatmap", "unet", "mvitv2", "beta"]
+exp_name: unet_mvitv2_beta
+
+
+

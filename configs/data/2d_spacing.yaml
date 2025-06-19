@@ -1,0 +1,6 @@
+defaults:
+  - default
+
+_dataset_target_: byu.data.datasets.spacing_2d_dataset.Spacing2dDataset
+
+patch_size: [896, 896]

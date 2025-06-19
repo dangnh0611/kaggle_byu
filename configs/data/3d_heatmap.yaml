@@ -1,0 +1,80 @@
+defaults:
+  - default
+_dataset_target_: byu.data.datasets.heatmap_3d_dataset.Heatmap3dDataset
+
+label_fname: gt_v2  # gt | gt_v2 | gt_v3 | all_gt | all_gt_v3
+patch_size: [224, 448, 448]
+start: [0, 0, 0]
+overlap: [0, 0, 0]
+border: [0, 0, 0]
+
+sigma: 0.2
+fast_val_workers: 5
+fast_val_prefetch: 5
+io_backend: cv2  # cv2, cv2_seq, npy, cache
+crop_outside: True
+ensure_fg: False
+label_smooth: [0.0,1.0]
+filter_rule: null  # null | eq1 | le1
+
+
+sampling:
+  method: pre_patch  # pre_patch | rand_crop
+  pre_patch:
+    fg_max_dup: 1
+    bg_ratio: 0.0
+    bg_from_pos_ratio: 0.01
+    overlap: [0, 0, 0]
+  rand_crop:
+    random_center: True
+    margin: 0.25
+    auto_correct_center: True
+    pos_weight: 1
+    neg_weight: 1
+
+transform:
+  resample_mode: trilinear # F.grid_sample() mode
+  target_spacing: [16,16,16]
+
+  heatmap_mode: gaussian
+  heatmap_stride: [1,1,1]
+  heatmap_same_sigma: False
+  heatmap_same_std: False
+  lazy: True
+  device: null
+
+aug:
+    enable: True
+    zoom_prob: 0.4
+    zoom_range: [[0.6, 1.2], [0.6, 1.2], [0.6, 1.2]]  # (X, Y, Z) or (H, W, D)
+    # affine1
+    affine1_prob: 0.5
+    affine1_scale: 0.3  # max_skew_xy = 1.3 / 0.7 = 1.86
+    # affine2
+    affine2_prob: 0.25
+    affine2_rotate_xy: 15 # degrees
+    affine2_scale: 0.3  # max_skew_xy = 1.3 / 0.7 = 1.86
+    affine2_shear: 0.2
+
+    rand_shift: False  # only used in rand_crop, very useful if random_center=auto_correct_center=False
+
+    # no lazy, can't properly transform points
+    grid_distort_prob: 0.0
+    smooth_deform_prob: 0.0
+
+    intensity_prob: 0.5
+    smooth_prob: 0.0
+    hist_equalize: False
+    downsample_prob: 0.2
+    coarse_dropout_prob: 0.1
+
+    # MIXER
+    mixup_prob: 0.0
+    cutmix_prob: 0.0
+    mixer_alpha: 1.0
+    mixup_target_mode: max
+
+tta:
+    # enable: [zyx]
+    enable: [zyx, zxy, zyx_x, zyx_y]
+    # enable: [zyx, zyx_x, zyx_y, zyx_z, zyx_xy, zyx_xz, zyx_yz, zyx_xyz, zxy, zxy_x, zxy_y, zxy_z, zxy_xy, zxy_xz, zxy_yz, zxy_xyz]

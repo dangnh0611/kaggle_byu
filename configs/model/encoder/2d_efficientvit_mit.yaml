@@ -1,0 +1,7 @@
+model_name: efficientvit_l1.r224_in1k  # efficientvit_b0.r224_in1k | efficientvit_l3.r384_in1k
+pretrained: True
+# input_size: ${data.patch_size}
+in_chans: ${data.patch_size.0}
+num_classes: 0
+# drop_rate: 0.0
+# drop_path_rate: 0.0

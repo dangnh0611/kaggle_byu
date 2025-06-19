@@ -1,0 +1,5 @@
+_target_: byu.loss.lovasz.LovaszTverskyLoss
+
+beta: 4.0
+per_sample: False
+symetric: True

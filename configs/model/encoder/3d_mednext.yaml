@@ -1,0 +1,9 @@
+_target_: byu.models.encoders.mednext.MedNeXtEncoder
+
+model_id: S  # S, B, M, L
+num_input_channels: 1
+num_classes: null
+kernel_size: 3  # 3 or 5
+stem_stride: 4
+decoder_num_blocks: -1  # unused decoder
+deep_supervision: False
